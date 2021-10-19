@@ -1,0 +1,118 @@
+task: 'deform'
+gpus: [0]
+
+train_dataset_module: 'lib.datasets.tpose_dataset'
+train_dataset_path: 'lib/datasets/tpose_dataset.py'
+test_dataset_module: 'lib.datasets.tpose_dataset'
+test_dataset_path: 'lib/datasets/tpose_dataset.py'
+
+network_module: 'lib.networks.bw_deform.tpose_nerf_network'
+network_path: 'lib/networks/bw_deform/tpose_nerf_network.py'
+renderer_module: 'lib.networks.renderer.tpose_renderer'
+renderer_path: 'lib/networks/renderer/tpose_renderer.py'
+
+trainer_module: 'lib.train.trainers.tpose_trainer'
+trainer_path: 'lib/train/trainers/tpose_trainer.py'
+
+evaluator_module: 'lib.evaluators.if_nerf'
+evaluator_path: 'lib/evaluators/if_nerf.py'
+
+visualizer_module: 'lib.visualizers.if_nerf'
+visualizer_path: 'lib/visualizers/if_nerf.py'
+
+train_dataset:
+    data_root: 'data/h36m/S9/Posing'
+    human: 'S9'
+    ann_file: 'data/h36m/S9/Posing/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: 'data/h36m/S9/Posing'
+    human: 'S9'
+    ann_file: 'data/h36m/S9/Posing/annots.npy'
+    split: 'test'
+
+train:
+    batch_size: 1
+    collator: ''
+    lr: 5e-4
+    weight_decay: 0
+    epoch: 400
+    scheduler:
+        type: 'exponential'
+        gamma: 0.1
+        decay_epochs: 1000
+    num_workers: 16
+
+test:
+    sampler: 'FrameSampler'
+    batch_size: 1
+    collator: ''
+
+ep_iter: 500
+save_ep: 200
+eval_ep: 1000
+
+# training options
+train_th: 0.1
+norm_th: 0.1
+
+# rendering options
+i_embed: 0
+xyz_res: 10
+view_res: 4
+raw_noise_std: 0
+
+N_samples: 64
+N_importance: 128
+N_rand: 1024
+
+perturb: 1
+white_bkgd: False
+
+render_views: 50
+
+# data options
+# H: 1002
+# W: 1000
+ratio: 1.
+training_view: [0, 1, 2]
+num_train_frame: 260
+num_eval_frame: 133
+begin_ith_frame: 0
+frame_interval: 5
+smpl: 'new_smpl'
+vertices: 'new_vertices'
+params: 'new_params'
+big_box: True
+
+train_th: 0.
+
+voxel_size: [0.005, 0.005, 0.005]
+
+# record options
+log_interval: 1
+
+
+mesh_cfg:
+    train_dataset_module: 'lib.datasets.aninerf_mesh_dataset'
+    train_dataset_path: 'lib/datasets/aninerf_mesh_dataset.py'
+    test_dataset_module: 'lib.datasets.aninerf_mesh_dataset'
+    test_dataset_path: 'lib/datasets/aninerf_mesh_dataset.py'
+
+    renderer_module: 'lib.networks.renderer.aninerf_mesh_renderer'
+    renderer_path: 'lib/networks/renderer/aninerf_mesh_renderer.py'
+
+    evaluator_module: 'lib.evaluators.mesh_evaluator'
+    evaluator_path: 'lib/evaluators/mesh_evaluator.py'
+
+    visualizer_module: 'lib.visualizers.mesh_visualizer'
+    visualizer_path: 'lib/visualizers/mesh_visualizer.py'
+
+    mesh_th: 5.
+
+    test_view: [1, 4, 7, 9]
+
+    test:
+        sampler: 'FrameSampler'
+        frame_sampler_interval: 10
