@@ -27,6 +27,15 @@ class Network(nn.Module):
         ])
         self.bw_fc = nn.Conv1d(W, 24, 1)
 
+        if cfg.aninerf_animation:
+            self.novel_pose_bw = BackwardBlendWeight()
+
+            if 'init_aninerf' in cfg:
+                net_utils.load_network(self,
+                                       'data/trained_model/deform/' +
+                                       cfg.init_aninerf,
+                                       strict=False)
+
     def get_bw_feature(self, pts, ind):
         pts = embedder.xyz_embedder(pts)
         pts = pts.transpose(1, 2)
@@ -57,8 +66,12 @@ class Network(nn.Module):
         init_pbw = init_pbw[:, :24]
 
         # neural blend weights of points at i
-        pbw = self.calculate_neural_blend_weights(pose_pts, init_pbw,
-                                                  batch['latent_index'] + 1)
+        if cfg.test_novel_pose:
+            pbw = self.novel_pose_bw(pose_pts, init_pbw,
+                                     batch['bw_latent_index'])
+        else:
+            pbw = self.calculate_neural_blend_weights(
+                pose_pts, init_pbw, batch['latent_index'] + 1)
 
         # transform points from i to i_0
         tpose = pose_points_to_tpose_points(pose_pts, pbw, batch['A'])
@@ -200,3 +213,43 @@ class TPoseHuman(nn.Module):
         rgb = self.rgb_fc(net)
 
         return alpha, rgb
+
+
+class BackwardBlendWeight(nn.Module):
+    def __init__(self):
+        super(BackwardBlendWeight, self).__init__()
+
+        self.bw_latent = nn.Embedding(cfg.num_eval_frame, 128)
+
+        self.actvn = nn.ReLU()
+
+        input_ch = 191
+        D = 8
+        W = 256
+        self.skips = [4]
+        self.bw_linears = nn.ModuleList([nn.Conv1d(input_ch, W, 1)] + [
+            nn.Conv1d(W, W, 1) if i not in
+            self.skips else nn.Conv1d(W + input_ch, W, 1) for i in range(D - 1)
+        ])
+        self.bw_fc = nn.Conv1d(W, 24, 1)
+
+    def get_point_feature(self, pts, ind, latents):
+        pts = embedder.xyz_embedder(pts)
+        pts = pts.transpose(1, 2)
+        latent = latents(ind)
+        latent = latent[..., None].expand(*latent.shape, pts.size(2))
+        features = torch.cat((pts, latent), dim=1)
+        return features
+
+    def forward(self, ppts, smpl_bw, latent_index):
+        latents = self.bw_latent
+        features = self.get_point_feature(ppts, latent_index, latents)
+        net = features
+        for i, l in enumerate(self.bw_linears):
+            net = self.actvn(self.bw_linears[i](net))
+            if i in self.skips:
+                net = torch.cat((features, net), dim=1)
+        bw = self.bw_fc(net)
+        bw = torch.log(smpl_bw + 1e-9) + bw
+        bw = F.softmax(bw, dim=1)
+        return bw

@@ -77,6 +77,7 @@ render_views: 50
 # W: 1000
 ratio: 1.
 training_view: [0, 1, 2]
+init_aninerf: 'no_pretrain'
 num_train_frame: 260
 num_eval_frame: 133
 begin_ith_frame: 0
@@ -92,6 +93,43 @@ voxel_size: [0.005, 0.005, 0.005]
 
 # record options
 log_interval: 1
+
+
+aninerf_animation_cfg:
+    trainer_module: 'lib.train.trainers.aninerf_animation_trainer'
+    trainer_path: 'lib/train/trainers/aninerf_animation_trainer.py'
+
+novel_pose_cfg:
+    train_dataset_module: 'lib.datasets.h36m.tpose_novel_pose_dataset'
+    train_dataset_path: 'lib/datasets/h36m/tpose_novel_pose_dataset.py'
+    test_dataset_module: 'lib.datasets.h36m.tpose_novel_pose_dataset'
+    test_dataset_path: 'lib/datasets/h36m/tpose_novel_pose_dataset.py'
+
+    renderer_module: 'lib.networks.renderer.tpose_renderer_mmsk'
+    renderer_path: 'lib/networks/renderer/tpose_renderer_mmsk.py'
+
+    visualizer_module: 'lib.visualizers.if_nerf_perform'
+    visualizer_path: 'lib/visualizers/if_nerf_perform.py'
+
+    test:
+        sampler: ''
+
+    training_view: [0]
+
+novel_view_cfg:
+    train_dataset_module: 'lib.datasets.h36m.tpose_novel_view_dataset'
+    train_dataset_path: 'lib/datasets/h36m/tpose_novel_view_dataset.py'
+    test_dataset_module: 'lib.datasets.h36m.tpose_novel_view_dataset'
+    test_dataset_path: 'lib/datasets/h36m/tpose_novel_view_dataset.py'
+
+    renderer_module: 'lib.networks.renderer.tpose_renderer_mmsk'
+    renderer_path: 'lib/networks/renderer/tpose_renderer_mmsk.py'
+
+    visualizer_module: 'lib.visualizers.if_nerf_demo'
+    visualizer_path: 'lib/visualizers/if_nerf_demo.py'
+
+    test:
+        sampler: ''
 
 
 mesh_cfg:

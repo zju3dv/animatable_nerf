@@ -112,6 +112,8 @@ cfg.result_dir = 'data/result'
 
 # training
 cfg.training_mode = 'default'
+cfg.aninerf_animation = False
+cfg.init_aninerf = 'no_pretrain'
 cfg.erode_edge = True
 
 # evaluation
@@ -161,6 +163,9 @@ def make_cfg(args):
 
     cfg.merge_from_other_cfg(current_cfg)
     cfg.merge_from_list(args.opts)
+
+    if cfg.aninerf_animation:
+        cfg.merge_from_other_cfg(cfg.aninerf_animation_cfg)
 
     if cfg.vis_novel_pose:
         cfg.merge_from_other_cfg(cfg.novel_pose_cfg)

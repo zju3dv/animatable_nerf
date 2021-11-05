@@ -36,7 +36,7 @@ class Dataset(data.Dataset):
         i = cfg.begin_ith_frame
         i_intv = cfg.frame_interval
         ni = cfg.num_train_frame
-        if cfg.test_novel_pose:
+        if cfg.test_novel_pose or cfg.aninerf_animation:
             i = cfg.begin_ith_frame + cfg.num_train_frame * i_intv
             ni = cfg.num_eval_frame
 
@@ -190,10 +190,12 @@ class Dataset(data.Dataset):
         ret.update(meta)
 
         latent_index = index // self.num_cams
+        bw_latent_index = index // self.num_cams
         if cfg.test_novel_pose:
             latent_index = cfg.num_train_frame - 1
         meta = {
             'latent_index': latent_index,
+            'bw_latent_index': bw_latent_index,
             'frame_index': frame_index,
             'cam_ind': cam_ind
         }
