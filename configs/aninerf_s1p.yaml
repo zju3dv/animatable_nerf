@@ -1,0 +1,31 @@
+task: 'deform'
+gpus: [0]
+
+parent_cfg: 'configs/aninerf_s9p.yaml'
+
+train_dataset:
+    data_root: 'data/h36m/S1/Posing'
+    human: 'S1'
+    ann_file: 'data/h36m/S1/Posing/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: 'data/h36m/S1/Posing'
+    human: 'S1'
+    ann_file: 'data/h36m/S1/Posing/annots.npy'
+    split: 'test'
+
+# data options
+# H: 1002
+# W: 1000
+ratio: 1.
+training_view: [0, 1, 2]
+init_aninerf: 'no_pretrain'
+num_train_frame: 150
+num_eval_frame: 49
+begin_ith_frame: 0
+frame_interval: 5
+smpl: 'new_smpl'
+vertices: 'new_vertices'
+params: 'new_params'
+big_box: True
