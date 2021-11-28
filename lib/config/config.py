@@ -121,7 +121,7 @@ cfg.eval = False
 cfg.skip_eval = False
 cfg.test_novel_pose = False
 cfg.novel_pose_ni = 100
-cfg.vis_novel_pose = False
+cfg.vis_pose_sequence = False
 cfg.vis_novel_view = False
 cfg.vis_tpose_mesh = False
 cfg.vis_posed_mesh = False
@@ -167,8 +167,8 @@ def make_cfg(args):
     if cfg.aninerf_animation:
         cfg.merge_from_other_cfg(cfg.aninerf_animation_cfg)
 
-    if cfg.vis_novel_pose:
-        cfg.merge_from_other_cfg(cfg.novel_pose_cfg)
+    if cfg.vis_pose_sequence:
+        cfg.merge_from_other_cfg(cfg.pose_sequence_cfg)
 
     if cfg.vis_novel_view:
         cfg.merge_from_other_cfg(cfg.novel_view_cfg)

@@ -9,10 +9,13 @@ import cv2
 from lib.config import cfg
 from lib.utils.if_nerf import if_nerf_data_utils as if_nerf_dutils
 from plyfile import PlyData
+from lib.utils import render_utils
 
 
 class Dataset(data.Dataset):
-    def __init__(self, data_root, human, ann_file, split, **kwargs):
+    def __init__(self, data_root, human, ann_file, split):
+        super(Dataset, self).__init__()
+
         self.data_root = data_root
         self.human = human
         self.split = split
@@ -20,36 +23,44 @@ class Dataset(data.Dataset):
         annots = np.load(ann_file, allow_pickle=True).item()
         self.cams = annots['cams']
 
-        num_cams = len(self.cams['K'])
-        view = cfg.training_view
+        if len(cfg.test_view) == 0:
+            self.test_view = 0
+        else:
+            self.test_view = cfg.test_view[0]
+
+        self.num_cams = 1
+        K, RT = render_utils.load_cam(ann_file)
+        render_w2c = render_utils.gen_path(RT)
 
         i = cfg.begin_ith_frame
         self.ims = np.array([
-            np.array(ims_data['ims'])[view]
+            np.array(ims_data['ims'])[cfg.training_view]
             for ims_data in annots['ims'][i:i + cfg.num_train_frame *
                                           cfg.frame_interval]
         ])
 
-        if cfg.vis_tpose_mesh:
-            self.ims = self.ims[:1]
+        self.render_K = K[self.test_view]
+        self.render_RT = RT[self.test_view]
 
-        self.Ks = np.array(self.cams['K'])[cfg.training_view].astype(
-            np.float32)
-        self.Rs = np.array(self.cams['R'])[cfg.training_view].astype(
-            np.float32)
-        self.Ts = np.array(self.cams['T'])[cfg.training_view].astype(
-            np.float32) / 1000.
+        self.render_w2c = render_w2c
+        img_root = 'data/render/{}'.format(cfg.exp_name)
+
+        self.Ks = np.array(K)[cfg.training_view].astype(np.float32)
+        self.RT = np.array(RT)[cfg.training_view].astype(np.float32)
         self.Ds = np.array(self.cams['D'])[cfg.training_view].astype(
             np.float32)
-
-        self.num_cams = 1
 
         self.lbs_root = os.path.join(self.data_root, 'lbs')
         joints = np.load(os.path.join(self.lbs_root, 'joints.npy'))
         self.joints = joints.astype(np.float32)
         self.parents = np.load(os.path.join(self.lbs_root, 'parents.npy'))
 
+        self.nrays = cfg.N_rand
+
     def prepare_input(self, i):
+        if self.human in ['CoreView_313', 'CoreView_315']:
+            i = i + 1
+
         # read xyz in the world coordinate system
         vertices_path = os.path.join(self.data_root, cfg.vertices,
                                      '{}.npy'.format(i))
@@ -71,111 +82,108 @@ class Dataset(data.Dataset):
         joints = self.joints
         parents = self.parents
         A = if_nerf_dutils.get_rigid_transformation(poses, joints, parents)
-
         pbw = np.load(os.path.join(self.lbs_root, 'bweights/{}.npy'.format(i)))
         pbw = pbw.astype(np.float32)
 
         return wxyz, pxyz, A, pbw, Rh, Th
 
-    def get_mask(self, i, nv):
-        im = self.ims[i, nv]
+    def get_mask(self, i):
+        ims = self.ims[i]
+        msks = []
 
-        msk_path = os.path.join(self.data_root, 'mask_cihp', im)[:-4] + '.png'
-        if not os.path.exists(msk_path):
-            msk_path = os.path.join(self.data_root, im.replace(
-                'images', 'mask'))[:-4] + '.png'
-        msk_cihp = imageio.imread(msk_path)
-        if len(msk_cihp.shape) == 3:
-            msk_cihp = msk_cihp[..., 0]
-        msk = (msk_cihp != 0).astype(np.uint8)
+        for nv in range(len(ims)):
+            im = ims[nv]
 
-        msk = cv2.undistort(msk, self.Ks[nv], self.Ds[nv])
+            msk_path = os.path.join(self.data_root, 'mask_cihp',
+                                    im)[:-4] + '.png'
+            msk_cihp = imageio.imread(msk_path)
+            msk_cihp = (msk_cihp != 0).astype(np.uint8)
 
-        border = 5
-        kernel = np.ones((border, border), np.uint8)
-        msk = cv2.dilate(msk.copy(), kernel)
+            msk = msk_cihp.astype(np.uint8)
 
-        return msk
+            K = self.Ks[nv].copy()
+            K[:2] = K[:2] / cfg.ratio
+            msk = cv2.undistort(msk, K, self.Ds[nv])
 
-    def prepare_inside_pts(self, pts, i):
-        sh = pts.shape
-        pts3d = pts.reshape(-1, 3)
+            border = 5
+            kernel = np.ones((border, border), np.uint8)
+            msk = cv2.dilate(msk.copy(), kernel)
 
-        inside = np.ones([len(pts3d)]).astype(np.uint8)
-        for nv in range(self.ims.shape[1]):
-            ind = inside == 1
-            pts3d_ = pts3d[ind]
+            msks.append(msk)
 
-            RT = np.concatenate([self.Rs[nv], self.Ts[nv]], axis=1)
-            pts2d = base_utils.project(pts3d_, self.Ks[nv], RT)
-
-            msk = self.get_mask(i, nv)
-            H, W = msk.shape
-            pts2d = np.round(pts2d).astype(np.int32)
-            pts2d[:, 0] = np.clip(pts2d[:, 0], 0, W - 1)
-            pts2d[:, 1] = np.clip(pts2d[:, 1], 0, H - 1)
-            msk_ = msk[pts2d[:, 1], pts2d[:, 0]]
-
-            inside[ind] = msk_
-
-        inside = inside.reshape(*sh[:-1])
-
-        return inside
+        return msks
 
     def __getitem__(self, index):
         latent_index = index
-        img_path = os.path.join(self.data_root, self.ims[index][0])
-        if self.human in ['CoreView_313', 'CoreView_315']:
-            i = int(os.path.basename(img_path).split('_')[4])
-            frame_index = i - 1
-        else:
-            i = int(os.path.basename(img_path)[:-4])
-            frame_index = i
+        frame_index = index * cfg.frame_interval
 
+        # read v_shaped
         vertices_path = os.path.join(self.lbs_root, 'bigpose_vertices.npy')
         tpose = np.load(vertices_path).astype(np.float32)
         tbounds = if_nerf_dutils.get_bounds(tpose)
         tbw = np.load(os.path.join(self.lbs_root, 'bigpose_bw.npy'))
         tbw = tbw.astype(np.float32)
 
-        wpts, ppts, A, pbw, Rh, Th = self.prepare_input(i)
+        wpts, ppts, A, pbw, Rh, Th = self.prepare_input(frame_index)
+
         pbounds = if_nerf_dutils.get_bounds(ppts)
         wbounds = if_nerf_dutils.get_bounds(wpts)
 
-        voxel_size = cfg.voxel_size
-        x = np.arange(wbounds[0, 0], wbounds[1, 0] + voxel_size[0],
-                      voxel_size[0])
-        y = np.arange(wbounds[0, 1], wbounds[1, 1] + voxel_size[1],
-                      voxel_size[1])
-        z = np.arange(wbounds[0, 2], wbounds[1, 2] + voxel_size[2],
-                      voxel_size[2])
-        pts = np.stack(np.meshgrid(x, y, z, indexing='ij'), axis=-1)
-        pts = pts.astype(np.float32)
+        msks = self.get_mask(frame_index)
 
-        inside = self.prepare_inside_pts(pts, index)
+        # reduce the image resolution by ratio
+        img_path = os.path.join(self.data_root, self.ims[0][0])
+        img = imageio.imread(img_path)
+        H, W = img.shape[:2]
+        H, W = int(H * cfg.ratio), int(W * cfg.ratio)
+        msks = [
+            cv2.resize(msk, (W, H), interpolation=cv2.INTER_NEAREST)
+            for msk in msks
+        ]
+        msks = np.array(msks)
 
-        ret = {'pts': pts}
+        K = self.render_K
+        RT = self.render_RT
+        R, T = RT[:3, :3], RT[:3, 3:]
+        ray_o, ray_d, near, far, mask_at_box = if_nerf_dutils.get_rays_within_bounds(
+            H, W, K, R, T, wbounds)
+        # ray_o, ray_d, near, far, center, scale, mask_at_box = render_utils.image_rays(
+        #         RT, K, wbounds)
+
+        ret = {
+            'ray_o': ray_o,
+            'ray_d': ray_d,
+            'near': near,
+            'far': far,
+            'mask_at_box': mask_at_box
+        }
+
+        # blend weight
         meta = {
             'A': A,
             'pbw': pbw,
             'tbw': tbw,
             'pbounds': pbounds,
             'wbounds': wbounds,
-            'tbounds': tbounds,
-            'inside': inside
+            'tbounds': tbounds
         }
         ret.update(meta)
 
         R = cv2.Rodrigues(Rh)[0].astype(np.float32)
+        latent_index = min(latent_index, cfg.num_train_frame - 1)
         meta = {
             'R': R,
             'Th': Th,
             'latent_index': latent_index,
-            'frame_index': frame_index
+            'frame_index': frame_index,
+            'view_index': self.test_view
         }
+        ret.update(meta)
+
+        meta = {'msks': msks, 'Ks': self.Ks, 'RT': self.RT, 'H': H, 'W': W}
         ret.update(meta)
 
         return ret
 
     def __len__(self):
-        return len(self.ims)
+        return cfg.num_train_frame

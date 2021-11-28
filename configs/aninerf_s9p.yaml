@@ -86,6 +86,7 @@ smpl: 'new_smpl'
 vertices: 'new_vertices'
 params: 'new_params'
 big_box: True
+box_padding: 0.1
 
 train_th: 0.
 
@@ -99,11 +100,11 @@ aninerf_animation_cfg:
     trainer_module: 'lib.train.trainers.aninerf_animation_trainer'
     trainer_path: 'lib/train/trainers/aninerf_animation_trainer.py'
 
-novel_pose_cfg:
-    train_dataset_module: 'lib.datasets.h36m.tpose_novel_pose_dataset'
-    train_dataset_path: 'lib/datasets/h36m/tpose_novel_pose_dataset.py'
-    test_dataset_module: 'lib.datasets.h36m.tpose_novel_pose_dataset'
-    test_dataset_path: 'lib/datasets/h36m/tpose_novel_pose_dataset.py'
+pose_sequence_cfg:
+    train_dataset_module: 'lib.datasets.tpose_pose_sequence_dataset'
+    train_dataset_path: 'lib/datasets/tpose_pose_sequence_dataset.py'
+    test_dataset_module: 'lib.datasets.tpose_pose_sequence_dataset'
+    test_dataset_path: 'lib/datasets/tpose_pose_sequence_dataset.py'
 
     renderer_module: 'lib.networks.renderer.tpose_renderer_mmsk'
     renderer_path: 'lib/networks/renderer/tpose_renderer_mmsk.py'
@@ -117,10 +118,10 @@ novel_pose_cfg:
     training_view: [0]
 
 novel_view_cfg:
-    train_dataset_module: 'lib.datasets.h36m.tpose_novel_view_dataset'
-    train_dataset_path: 'lib/datasets/h36m/tpose_novel_view_dataset.py'
-    test_dataset_module: 'lib.datasets.h36m.tpose_novel_view_dataset'
-    test_dataset_path: 'lib/datasets/h36m/tpose_novel_view_dataset.py'
+    train_dataset_module: 'lib.datasets.tpose_novel_view_dataset'
+    train_dataset_path: 'lib/datasets/tpose_novel_view_dataset.py'
+    test_dataset_module: 'lib.datasets.tpose_novel_view_dataset'
+    test_dataset_path: 'lib/datasets/tpose_novel_view_dataset.py'
 
     renderer_module: 'lib.networks.renderer.tpose_renderer_mmsk'
     renderer_path: 'lib/networks/renderer/tpose_renderer_mmsk.py'
@@ -148,6 +149,7 @@ mesh_cfg:
     visualizer_path: 'lib/visualizers/mesh_visualizer.py'
 
     mesh_th: 5.
+    box_padding: 0.05
 
     test_view: [1, 4, 7, 9]
 
