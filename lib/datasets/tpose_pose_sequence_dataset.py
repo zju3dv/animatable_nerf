@@ -118,10 +118,10 @@ class Dataset(data.Dataset):
         frame_index = index * cfg.frame_interval
 
         # read v_shaped
-        vertices_path = os.path.join(self.lbs_root, 'bigpose_vertices.npy')
+        vertices_path = os.path.join(self.lbs_root, 'tvertices.npy')
         tpose = np.load(vertices_path).astype(np.float32)
         tbounds = if_nerf_dutils.get_bounds(tpose)
-        tbw = np.load(os.path.join(self.lbs_root, 'bigpose_bw.npy'))
+        tbw = np.load(os.path.join(self.lbs_root, 'tbw.npy'))
         tbw = tbw.astype(np.float32)
 
         wpts, ppts, A, pbw, Rh, Th = self.prepare_input(frame_index)

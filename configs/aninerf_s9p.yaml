@@ -86,7 +86,7 @@ smpl: 'new_smpl'
 vertices: 'new_vertices'
 params: 'new_params'
 big_box: True
-box_padding: 0.1
+box_padding: 0.05
 
 train_th: 0.
 
