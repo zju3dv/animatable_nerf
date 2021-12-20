@@ -115,6 +115,17 @@ class Network(nn.Module):
         wpts = wpts[None]
         pose_pts = world_points_to_pose_points(wpts, batch['R'], batch['Th'])
 
+        with torch.no_grad():
+            init_pbw = pts_sample_blend_weights(pose_pts, batch['pbw'],
+                                                batch['pbounds'])
+            pnorm = init_pbw[:, -1]
+            norm_th = cfg.norm_th
+            pind = pnorm < norm_th
+            pind[torch.arange(len(pnorm)), pnorm.argmin(dim=1)] = True
+            pose_pts = pose_pts[pind][None]
+            viewdir = viewdir[pind[0]]
+            dists = dists[pind[0]]
+
         # transform points from the pose space to the tpose space
         tpose, pbw = self.pose_points_to_tpose_points(pose_pts, batch)
 
@@ -150,7 +161,11 @@ class Network(nn.Module):
         raw = torch.cat((rgb, alpha[None]), dim=0)
         raw = raw.transpose(0, 1)
 
-        ret = {'pbw': pbw, 'tbw': tbw, 'raw': raw}
+        n_batch, n_point = wpts.shape[:2]
+        raw_full = torch.zeros([n_batch, n_point, 4], dtype=wpts.dtype, device=wpts.device)
+        raw_full[pind] = raw
+
+        ret = {'pbw': pbw, 'tbw': tbw, 'raw': raw_full}
 
         return ret
 

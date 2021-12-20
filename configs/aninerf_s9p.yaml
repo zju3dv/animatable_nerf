@@ -46,6 +46,7 @@ train:
 
 test:
     sampler: 'FrameSampler'
+    frame_sampler_interval: 6
     batch_size: 1
     collator: ''
 
@@ -54,8 +55,8 @@ save_ep: 200
 eval_ep: 1000
 
 # training options
-train_th: 0.1
-norm_th: 0.1
+train_th: 0.
+norm_th: 0.05
 
 # rendering options
 i_embed: 0
@@ -88,7 +89,8 @@ params: 'new_params'
 big_box: True
 box_padding: 0.05
 
-train_th: 0.
+H: 1002
+W: 1000
 
 voxel_size: [0.005, 0.005, 0.005]
 
