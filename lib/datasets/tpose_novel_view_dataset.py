@@ -93,6 +93,9 @@ class Dataset(data.Dataset):
             msk_path = os.path.join(self.data_root, 'mask_cihp',
                                     im)[:-4] + '.png'
             if not os.path.exists(msk_path):
+                msk_path = os.path.join(self.data_root, 'mask',
+                                        im)[:-4] + '.png'
+            if not os.path.exists(msk_path):
                 msk_path = os.path.join(
                     self.data_root, im.replace('images', 'mask'))[:-4] + '.png'
             if not os.path.exists(msk_path):

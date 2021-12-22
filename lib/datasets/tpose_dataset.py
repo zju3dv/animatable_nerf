@@ -60,6 +60,9 @@ class Dataset(data.Dataset):
         msk_path = os.path.join(self.data_root, 'mask_cihp',
                                 self.ims[index])[:-4] + '.png'
         if not os.path.exists(msk_path):
+            msk_path = os.path.join(self.data_root, 'mask',
+                                    self.ims[index])[:-4] + '.png'
+        if not os.path.exists(msk_path):
             msk_path = os.path.join(self.data_root, self.ims[index].replace(
                 'images', 'mask'))[:-4] + '.png'
         msk_cihp = imageio.imread(msk_path)

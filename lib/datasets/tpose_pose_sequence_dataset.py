@@ -96,6 +96,9 @@ class Dataset(data.Dataset):
 
             msk_path = os.path.join(self.data_root, 'mask_cihp',
                                     im)[:-4] + '.png'
+            if not os.path.exists(msk_path):
+                msk_path = os.path.join(self.data_root, 'mask',
+                                        im)[:-4] + '.png'
             msk_cihp = imageio.imread(msk_path)
             msk_cihp = (msk_cihp != 0).astype(np.uint8)
 
