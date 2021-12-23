@@ -113,7 +113,7 @@ Take the visualization on `313` as an example.
     python run.py --type visualize --cfg_file configs/aninerf_313.yaml exp_name aninerf_313 resume True vis_novel_view True begin_ith_frame 0
     ```
 
-    * Visualize views of dynamic humans with 3-th camera
+    * Visualize views of dynamic humans with 0-th camera
     ```
     python run.py --type visualize --cfg_file configs/aninerf_313.yaml exp_name aninerf_313 resume True vis_pose_sequence True test_view "0,"
     ```
