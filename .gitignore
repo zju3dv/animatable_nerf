@@ -10,3 +10,4 @@ __pycache__/
 *.npy
 *.ipynb
 /data/
+build

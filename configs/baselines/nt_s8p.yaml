@@ -1,0 +1,22 @@
+task: 'deform'
+gpus: [0]
+
+parent_cfg: 'configs/aninerf_s8p.yaml'
+
+train_dataset_module: 'lib.datasets.h36m.nt'
+train_dataset_path: 'lib/datasets/h36m/nt.py'
+test_dataset_module: 'lib.datasets.h36m.nt'
+test_dataset_path: 'lib/datasets/h36m/nt.py'
+network_module: 'lib.networks.nt.nt'
+network_path: 'lib/networks/nt/nt.py'
+renderer_module: 'lib.networks.renderer.nt_renderer'
+renderer_path: 'lib/networks/renderer/nt_renderer.py'
+trainer_module: 'lib.train.trainers.nt'
+trainer_path: 'lib/train/trainers/nt.py'
+evaluator_module: 'lib.evaluators.nt'
+evaluator_path: 'lib/evaluators/nt.py'
+visualizer_module: 'lib.visualizers.nhr'
+visualizer_path: 'lib/visualizers/nhr.py'
+train_th: 0.
+
+voxel_size: [0.005, 0.005, 0.005]

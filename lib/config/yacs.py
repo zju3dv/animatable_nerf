@@ -164,6 +164,19 @@ class CfgNode(dict):
         self_as_dict = _to_dict(self)
         return yaml.safe_dump(self_as_dict)
 
+    def merge_strain(self, current_cfg):
+        if 'parent_cfg' in current_cfg.keys():
+            with open(current_cfg.parent_cfg, 'r') as f:
+                p_cfg = load_cfg(f)
+            self.merge_strain(p_cfg)  # recursion here
+        if 'parent_cfgs' in current_cfg.keys():
+            for parent in current_cfg.parent_cfgs:
+                with open(parent, 'r') as f:
+                    p_cfg = load_cfg(f)
+                self.merge_strain(p_cfg)  # recursion here
+        # extra consideration needed to avoid mergin self (perfomance)
+        self.merge_from_other_cfg(current_cfg)  # root config should be the last layer
+
     def merge_from_file(self, cfg_filename):
         """Load a yaml config file and merge it this CfgNode."""
         with open(cfg_filename, "r") as f:

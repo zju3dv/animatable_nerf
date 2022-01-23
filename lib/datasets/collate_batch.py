@@ -3,12 +3,7 @@ import torch
 import numpy as np
 
 
-def meta_anisdf_collator(batch):
-    batch = [[default_collate([b]) for b in batch_] for batch_ in batch]
-    return batch
-
-
-_collators = {'meta_anisdf': meta_anisdf_collator}
+_collators = {}
 
 
 def make_collator(cfg, is_train):

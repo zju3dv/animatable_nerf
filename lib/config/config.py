@@ -156,12 +156,8 @@ def make_cfg(args):
     with open(args.cfg_file, 'r') as f:
         current_cfg = yacs.load_cfg(f)
 
-    if 'parent_cfg' in current_cfg.keys():
-        with open(current_cfg.parent_cfg, 'r') as f:
-            parent_cfg = yacs.load_cfg(f)
-        cfg.merge_from_other_cfg(parent_cfg)
+    cfg.merge_strain(current_cfg)
 
-    cfg.merge_from_other_cfg(current_cfg)
     cfg.merge_from_list(args.opts)
 
     if cfg.aninerf_animation:

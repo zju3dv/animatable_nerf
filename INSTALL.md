@@ -11,6 +11,24 @@ pip install torch==1.4.0+cu100 -f https://download.pytorch.org/whl/torch_stable.
 pip install -r requirements.txt
 ```
 
+If someone wants to run the baseline methods `NHR` and `NT`, please install the libraries:
+
+```
+# install poinetnet2
+ROOT=/path/to/animatable_nerf
+cd $ROOT/lib/csrc/pointnet2
+python setup.py build_ext --inplace
+
+# install PCPR
+cd ~
+git clone https://github.com/wuminye/PCPR.git
+cd PCPR
+python setup.py install
+
+# install pytorch3d
+conda install pytorch3d -c pytorch3d
+```
+
 ### Set up datasets
 
 #### Human3.6M dataset
@@ -21,6 +39,10 @@ pip install -r requirements.txt
     ROOT=/path/to/animatable_nerf
     cd $ROOT/data
     ln -s /path/to/h36m h36m
+    ```
+3. If someone wants to run the baseline method `NT`, please run the script:
+    ```
+    python tools/render_h36m_uvmaps_pytorch3d.py
     ```
 
 #### ZJU-Mocap dataset
