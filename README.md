@@ -3,7 +3,7 @@
 * `10/28/2021` To make the comparison with Animatable NeRF easier on the Human3.6M dataset, we save the quantitative results at [here](https://zjueducn-my.sharepoint.com/:u:/g/personal/pengsida_zju_edu_cn/EbpGvw8LvnFHislCMRzlpLkBNcIdJeWuc96TOJhQ1gX7cQ?e=nirNmn), which also contains the results of other methods, including Neural Body, D-NeRF, Multi-view Neural Human Rendering, and Deferred Neural Human Rendering.
 
 # Animatable Neural Radiance Fields for Modeling Dynamic Human Bodies
-### [Project Page](https://zju3dv.github.io/animatable_nerf) | [Video](https://www.youtube.com/watch?v=eWOSWbmfJo4) | [Paper](https://arxiv.org/abs/2105.02872) | [Data](https://zjueducn-my.sharepoint.com/:f:/g/personal/pengsida_zju_edu_cn/EsCahURVXs1Gm6Oe-sF9zFABWwOLblFd_dP0Ovh8NN2d9w?e=L8P7B0)
+### [Project Page](https://zju3dv.github.io/animatable_nerf) | [Video](https://www.youtube.com/watch?v=eWOSWbmfJo4) | [Paper](https://arxiv.org/abs/2105.02872) | [Data](https://github.com/zju3dv/animatable_nerf/blob/master/INSTALL.md#zju-mocap-dataset)
 
 ![teaser](https://zju3dv.github.io/animatable_nerf/images/github_teaser.gif)
 
