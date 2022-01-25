@@ -26,7 +26,11 @@ cd PCPR
 python setup.py install
 
 # install pytorch3d
-conda install pytorch3d -c pytorch3d
+cd ~
+git clone https://github.com/facebookresearch/pytorch3d.git
+cd pytorch3d
+git checkout tags/v0.4.0
+python setup.py install
 ```
 
 ### Set up datasets
