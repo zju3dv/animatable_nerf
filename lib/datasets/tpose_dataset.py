@@ -199,7 +199,10 @@ class Dataset(data.Dataset):
         latent_index = index // self.num_cams
         bw_latent_index = index // self.num_cams
         if cfg.test_novel_pose:
-            latent_index = cfg.num_train_frame - 1
+            if 'h36m' in self.data_root:
+                latent_index = 0
+            else:
+                latent_index = cfg.num_train_frame - 1
         meta = {
             'latent_index': latent_index,
             'bw_latent_index': bw_latent_index,
