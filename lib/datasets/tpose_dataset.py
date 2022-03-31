@@ -114,10 +114,6 @@ class Dataset(data.Dataset):
         img = imageio.imread(img_path).astype(np.float32) / 255.
         msk, orig_msk = self.get_mask(index)
 
-        if 'H' in cfg:
-            H, W = cfg.H, cfg.W
-            img = cv2.resize(img, (W, H), interpolation=cv2.INTER_AREA)
-
         H, W = img.shape[:2]
         msk = cv2.resize(msk, (W, H), interpolation=cv2.INTER_NEAREST)
         orig_msk = cv2.resize(orig_msk, (W, H),
