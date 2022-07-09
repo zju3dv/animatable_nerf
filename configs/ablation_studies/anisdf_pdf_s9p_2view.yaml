@@ -1,0 +1,14 @@
+task: 'deform'
+gpus: [0]
+
+parent_cfg: 'configs/sdf_pdf/anisdf_pdf_s9p.yaml'
+
+# data options
+# H: 1002
+# W: 1000
+training_view: [0, 1]
+test_view: [3]
+num_train_frame: 260
+num_eval_frame: 133
+begin_ith_frame: 0
+frame_interval: 5

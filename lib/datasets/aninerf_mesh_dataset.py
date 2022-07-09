@@ -48,6 +48,20 @@ class Dataset(data.Dataset):
         joints = np.load(os.path.join(self.lbs_root, 'joints.npy'))
         self.joints = joints.astype(np.float32)
         self.parents = np.load(os.path.join(self.lbs_root, 'parents.npy'))
+        weights = np.load(os.path.join(self.lbs_root, 'weights.npy'))
+        self.weights = weights.astype(np.float32)
+        self.big_A = self.load_bigpose()
+
+    def load_bigpose(self):
+        big_poses = np.zeros([len(self.joints), 3]).astype(np.float32).ravel()
+        angle = 30
+        big_poses[5] = np.deg2rad(angle)
+        big_poses[8] = np.deg2rad(-angle)
+        big_poses = big_poses.reshape(-1, 3)
+        big_A = if_nerf_dutils.get_rigid_transformation(
+            big_poses, self.joints, self.parents)
+        big_A = big_A.astype(np.float32)
+        return big_A
 
     def prepare_input(self, i):
         # read xyz in the world coordinate system
@@ -72,10 +86,9 @@ class Dataset(data.Dataset):
         parents = self.parents
         A = if_nerf_dutils.get_rigid_transformation(poses, joints, parents)
 
-        pbw = np.load(os.path.join(self.lbs_root, 'bweights/{}.npy'.format(i)))
-        pbw = pbw.astype(np.float32)
+        poses = poses.ravel().astype(np.float32)
 
-        return wxyz, pxyz, A, pbw, Rh, Th
+        return wxyz, pxyz, A, Rh, Th, poses
 
     def get_mask(self, i, nv):
         im = self.ims[i, nv]
@@ -132,13 +145,15 @@ class Dataset(data.Dataset):
             i = int(os.path.basename(img_path)[:-4])
             frame_index = i
 
-        vertices_path = os.path.join(self.lbs_root, 'tvertices.npy')
+        # read v_shaped
+        if cfg.get('use_bigpose', False):
+            vertices_path = os.path.join(self.lbs_root, 'bigpose_vertices.npy')
+        else:
+            vertices_path = os.path.join(self.lbs_root, 'tvertices.npy')
         tpose = np.load(vertices_path).astype(np.float32)
         tbounds = if_nerf_dutils.get_bounds(tpose)
-        tbw = np.load(os.path.join(self.lbs_root, 'tbw.npy'))
-        tbw = tbw.astype(np.float32)
 
-        wpts, ppts, A, pbw, Rh, Th = self.prepare_input(i)
+        wpts, ppts, A, Rh, Th, poses = self.prepare_input(i)
         pbounds = if_nerf_dutils.get_bounds(ppts)
         wbounds = if_nerf_dutils.get_bounds(wpts)
 
@@ -157,8 +172,10 @@ class Dataset(data.Dataset):
         ret = {'pts': pts}
         meta = {
             'A': A,
-            'pbw': pbw,
-            'tbw': tbw,
+            'big_A': self.big_A,
+            'poses': poses,
+            'weights': self.weights,
+            'pvertices': ppts,
             'pbounds': pbounds,
             'wbounds': wbounds,
             'tbounds': tbounds,

@@ -32,3 +32,15 @@ python train_net.py --cfg_file configs/aninerf_377.yaml exp_name aninerf_377_ful
 
 python train_net.py --cfg_file configs/aninerf_386.yaml exp_name aninerf_386 resume False
 python train_net.py --cfg_file configs/aninerf_386.yaml exp_name aninerf_386_full resume False aninerf_animation True init_aninerf aninerf_386
+
+# Extended version: training with S9 of Human3.6M as an example
+
+# Vanilla Animatable NeRF
+python train_net.py --cfg_file configs/aligned_nerf_lbw/aligned_aninerf_lbw_s9p.yaml exp_name aligned_aninerf_lbw_s9p resume False
+python train_net.py --cfg_file configs/aligned_nerf_lbw/aligned_aninerf_lbw_s9p.yaml exp_name aligned_aninerf_lbw_s9p_full resume False aninerf_animation True init_aninerf aligned_aninerf_lbw_s9p
+
+# Pose dependent displacement field + Animatable NeRF
+python train_net.py --cfg_file configs/aligned_nerf_pdf/aligned_aninerf_pdf_s9p.yaml exp_name aligned_aninerf_pdf_s9p resume False
+
+# Pose dependent displacement field + SDF field (full Animatable Neural Fields)
+python train_net.py --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume False

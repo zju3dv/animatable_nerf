@@ -141,7 +141,6 @@ def parse_cfg(cfg, args):
 
     if cfg.num_latent_code < 0:
         cfg.num_latent_code = cfg.num_train_frame
-
     # assign the gpus
     os.environ['CUDA_VISIBLE_DEVICES'] = ', '.join([str(gpu) for gpu in cfg.gpus])
     cfg.trained_model_dir = os.path.join(cfg.trained_model_dir, cfg.task, cfg.exp_name)

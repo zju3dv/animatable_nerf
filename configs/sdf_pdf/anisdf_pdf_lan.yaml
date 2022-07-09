@@ -1,0 +1,36 @@
+task: 'deform'
+gpus: [0]
+
+parent_cfg: 'configs/sdf_pdf/anisdf_pdf_s9p.yaml'
+
+train_dataset:
+    data_root: 'data/deepcap/lan_images620_1300'
+    human: 'Lan'
+    ann_file: 'data/deepcap/lan_images620_1300/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: 'data/deepcap/lan_images620_1300'
+    human: 'Lan'
+    ann_file: 'data/deepcap/lan_images620_1300/annots.npy'
+    split: 'test'
+
+test:
+    frame_sampler_interval: 30
+
+# data options
+# H: 1002
+# W: 1000
+ratio: 1.
+training_view: [0]
+init_aninerf: 'no_pretrain'
+num_train_frame: 300
+num_eval_frame: 300
+begin_ith_frame: 0
+frame_interval: 1
+smpl: 'smpl'
+vertices: 'vertices'
+params: 'params'
+use_bigpose: True
+big_box: True
+box_padding: 0.05

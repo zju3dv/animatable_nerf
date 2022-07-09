@@ -1,6 +1,6 @@
 import numpy as np
 from lib.config import cfg
-from skimage.measure import compare_ssim
+from skimage.metrics import structural_similarity as compare_ssim
 import os
 import cv2
 from termcolor import colored
@@ -60,6 +60,9 @@ class Evaluator:
     def evaluate(self, output, batch):
         rgb_pred = output['rgb_map'][0].detach().cpu().numpy()
         rgb_gt = batch['rgb'][0].detach().cpu().numpy()
+
+        if rgb_gt.sum() == 0:
+            return
 
         mse = np.mean((rgb_pred - rgb_gt)**2)
         self.mse.append(mse)

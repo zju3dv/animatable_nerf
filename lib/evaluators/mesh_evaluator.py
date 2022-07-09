@@ -43,6 +43,17 @@ class Evaluator:
         self.chamfers.append(chamfer)
         self.p2ss.append(p2s)
 
+        result_dir = 'data/animation/{}'.format(cfg.exp_name)
+        os.system('mkdir -p {}'.format(result_dir))
+
+        result_dir = os.path.join(result_dir, 'posed_mesh')
+        os.system('mkdir -p {}'.format(result_dir))
+        frame_index = batch['frame_index'][0].item()
+        mesh_path = os.path.join(result_dir,
+                                 '{:04d}.ply'.format(frame_index))
+
+        src_mesh.export(mesh_path)
+
     def summarize(self):
         result_dir = cfg.result_dir
         print(

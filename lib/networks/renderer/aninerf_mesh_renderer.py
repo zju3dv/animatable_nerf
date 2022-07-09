@@ -30,7 +30,7 @@ class Renderer:
         inside = batch['inside'][0].bool()
         pts = pts[0][inside]
 
-        alpha_decoder = lambda x: self.net.calculate_alpha(x, batch)
+        alpha_decoder = lambda x: self.net.get_alpha(x, batch)
 
         alpha = self.batchify_rays(pts, alpha_decoder, self.net, 2048 * 64, batch)
 

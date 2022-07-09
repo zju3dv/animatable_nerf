@@ -91,7 +91,8 @@ class Trainer(object):
                 lr = optimizer.param_groups[0]['lr']
                 memory = torch.cuda.max_memory_allocated() / 1024.0 / 1024.0
 
-                training_state = '  '.join(['eta: {}', '{}', 'lr: {:.6f}', 'max_mem: {:.0f}'])
+                exp_name = 'exp: {}'.format(cfg.exp_name)
+                training_state = '  '.join([exp_name, 'eta: {}', '{}', 'lr: {:.6f}', 'max_mem: {:.0f}'])
                 training_state = training_state.format(eta_string, str(recorder), lr, memory)
                 print(training_state)
 

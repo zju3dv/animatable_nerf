@@ -1,0 +1,39 @@
+task: 'deform'
+gpus: [0]
+
+parent_cfg: 'configs/aligned_nerf_pdf/aligned_aninerf_pdf_s9p.yaml'
+
+train_dataset:
+    data_root: 'data/right_turn/josh'
+    human: 'rp_josh'
+    ann_file: 'data/right_turn/josh/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: 'data/right_turn/josh'
+    human: 'rp_josh'
+    ann_file: 'data/right_turn/josh/annots.npy'
+    split: 'test'
+
+test:
+    frame_sampler_interval: 10
+
+erode_edge: False
+
+
+# data options
+# H: 1002
+# W: 1000
+ratio: 1.
+training_view: [1]
+init_aninerf: 'no_pretrain'
+num_train_frame: 100
+num_eval_frame: 100
+begin_ith_frame: 0
+frame_interval: 1
+smpl: 'smpl'
+vertices: 'vertices'
+params: 'params'
+use_bigpose: True
+big_box: True
+box_padding: 0.1

@@ -91,6 +91,26 @@ class Renderer:
             tbw = ret['tbw'].view(n_batch, -1, 24)
             ret.update({'tbw': tbw})
 
+        if 'sdf' in ret:
+            # get pixels that outside the mask or no ray-geometry intersection
+            sdf = ret['sdf'].view(n_batch, n_pixel, n_sample)
+            min_sdf = sdf.min(dim=2)[0]
+            free_sdf = min_sdf[occ == 0]
+            free_label = torch.zeros_like(free_sdf)
+
+            with torch.no_grad():
+                intersection_mask, _ = get_intersection_mask(sdf, z_vals)
+            ind = (intersection_mask == False) * (occ == 1)
+            sdf = min_sdf[ind]
+            label = torch.ones_like(sdf)
+
+            sdf = torch.cat([sdf, free_sdf])
+            label = torch.cat([label, free_label])
+            ret.update({
+                'msk_sdf': sdf.view(n_batch, -1),
+                'msk_label': label.view(n_batch, -1)
+            })
+
         if not rgb_map.requires_grad:
             ret = {k: ret[k].detach().cpu() for k in ret.keys()}
 

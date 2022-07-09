@@ -347,7 +347,14 @@ def save_model(net, optim, scheduler, recorder, model_dir, epoch, last=False):
         os.path.join(model_dir, '{}.pth'.format(min(pths)))))
 
 
-def load_network(net, model_dir, resume=True, epoch=-1, strict=True):
+def startswith_any(k, l):
+    for s in l:
+        if k.startswith(s):
+            return True
+    return False
+
+
+def load_network(net, model_dir, resume=True, epoch=-1, strict=True, only=[]):
     if not resume:
         return 0
 
@@ -375,7 +382,17 @@ def load_network(net, model_dir, resume=True, epoch=-1, strict=True):
 
     print('load model: {}'.format(model_path))
     pretrained_model = torch.load(model_path)
-    net.load_state_dict(pretrained_model['net'], strict=strict)
+    pretrained_net = pretrained_model['net']
+
+    if only:
+        strict = False
+        keys = list(pretrained_net.keys())
+        for k in keys:
+            if not startswith_any(k, only):
+                del pretrained_net[k]
+
+    net.load_state_dict(pretrained_net, strict=strict)
+
     return pretrained_model['epoch'] + 1
 
 

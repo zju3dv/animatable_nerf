@@ -54,21 +54,36 @@ class Dataset(data.Dataset):
         joints = np.load(os.path.join(self.lbs_root, 'joints.npy'))
         self.joints = joints.astype(np.float32)
         self.parents = np.load(os.path.join(self.lbs_root, 'parents.npy'))
+        self.big_A = self.load_bigpose()
         self.nrays = cfg.N_rand
+
+    def load_bigpose(self):
+        big_poses = np.zeros([len(self.joints), 3]).astype(np.float32).ravel()
+        angle = 30
+        big_poses[5] = np.deg2rad(angle)
+        big_poses[8] = np.deg2rad(-angle)
+        big_poses = big_poses.reshape(-1, 3)
+        big_A = if_nerf_dutils.get_rigid_transformation(
+            big_poses, self.joints, self.parents)
+        big_A = big_A.astype(np.float32)
+        return big_A
 
     def get_mask(self, index):
         msk_path = os.path.join(self.data_root, 'mask_cihp',
                                 self.ims[index])[:-4] + '.png'
         if not os.path.exists(msk_path):
-            msk_path = os.path.join(self.data_root, 'mask',
-                                    self.ims[index])[:-4] + '.png'
-        if not os.path.exists(msk_path):
             msk_path = os.path.join(self.data_root, self.ims[index].replace(
                 'images', 'mask'))[:-4] + '.png'
+        if not os.path.exists(msk_path):
+            msk_path = os.path.join(self.data_root, self.ims[index].replace(
+                'images', 'mask'))[:-4] + '.jpg'
         msk_cihp = imageio.imread(msk_path)
         if len(msk_cihp.shape) == 3:
             msk_cihp = msk_cihp[..., 0]
-        msk_cihp = (msk_cihp != 0).astype(np.uint8)
+        if 'deepcap' in self.data_root:
+            msk_cihp = (msk_cihp > 125).astype(np.uint8)
+        else:
+            msk_cihp = (msk_cihp != 0).astype(np.uint8)
         msk = msk_cihp
         orig_msk = msk.copy()
 
@@ -147,9 +162,11 @@ class Dataset(data.Dataset):
             frame_index = i
 
         # read v_shaped
+        # vertices_path = os.path.join(self.lbs_root, 'bigpose_vertices.npy')
         vertices_path = os.path.join(self.lbs_root, 'tvertices.npy')
         tpose = np.load(vertices_path).astype(np.float32)
         tbounds = if_nerf_dutils.get_bounds(tpose)
+        # tbw = np.load(os.path.join(self.lbs_root, 'bigpose_bw.npy'))
         tbw = np.load(os.path.join(self.lbs_root, 'tbw.npy'))
         tbw = tbw.astype(np.float32)
 
@@ -179,6 +196,7 @@ class Dataset(data.Dataset):
         # blend weight
         meta = {
             'A': A,
+            'big_A': self.big_A,
             'pbw': pbw,
             'tbw': tbw,
             'pbounds': pbounds,

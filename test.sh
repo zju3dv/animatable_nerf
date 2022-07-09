@@ -32,3 +32,21 @@ python run.py --type evaluate --cfg_file configs/aninerf_377.yaml exp_name anine
 
 python run.py --type evaluate --cfg_file configs/aninerf_386.yaml exp_name aninerf_386 resume True
 python run.py --type evaluate --cfg_file configs/aninerf_386.yaml exp_name aninerf_386_full resume True aninerf_animation True init_aninerf aninerf_386 test_novel_pose True
+
+
+# Extended version: image synthesis evaluation with S9 of Human3.6M as an example
+
+# Vanilla Animatable NeRF
+python run.py --type evaluate --cfg_file configs/aligned_nerf_lbw/aligned_aninerf_lbw_s9p.yaml exp_name aligned_aninerf_lbw_s9p resume True
+python run.py --type evaluate --cfg_file configs/aligned_nerf_lbw/aligned_aninerf_lbw_s9p.yaml exp_name aligned_aninerf_lbw_s9p_full resume True aninerf_animation True init_aninerf aligned_aninerf_lbw_s9p test_novel_pose True
+
+# Pose-dependent displacement field + Animatable NeRF
+python run.py --type evaluate --cfg_file configs/aligned_nerf_pdf/aligned_aninerf_pdf_s9p.yaml exp_name aligned_aninerf_pdf_s9p resume True
+python run.py --type evaluate --cfg_file configs/aligned_nerf_pdf/aligned_aninerf_pdf_s9p.yaml exp_name aligned_aninerf_pdf_s9p test_novel_pose True resume True
+
+# Pose-dependent displacement field + SDF field (full Animatable Neural Fields)
+python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True
+python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p test_novel_pose True resume True 
+
+# Extended version: 3D reconstruction with S9 of Human3.6M as an example (SDF-PDF version)
+python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True vis_posed_mesh True

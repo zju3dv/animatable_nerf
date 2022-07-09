@@ -1,0 +1,33 @@
+task: 'deform'
+gpus: [0]
+
+parent_cfg: 'configs/sdf_pdf/anisdf_pdf_s9p.yaml'
+
+train_dataset:
+    data_root: 'data/deepcap/Magdalena/training'
+    human: 'dp_magdalena'
+    ann_file: 'data/deepcap/Magdalena/training/annots.npy'
+    split: 'train'
+
+test_dataset:
+    data_root: 'data/deepcap/Magdalena/training'
+    human: 'dp_magdalena'
+    ann_file: 'data/deepcap/Magdalena/training/annots.npy'
+    split: 'test'
+
+
+# data options
+# H: 1002
+# W: 1000
+ratio: 1.
+training_view: [0, 4, 8, 12]
+begin_ith_frame: 700
+num_train_frame: 300
+training_view: [0, 1, 2]
+frame_interval: 1
+smpl: 'smpl'
+vertices: 'vertices'
+params: 'params'
+use_bigpose: True
+big_box: True
+box_padding: 0.1

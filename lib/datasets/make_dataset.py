@@ -8,6 +8,7 @@ from .collate_batch import make_collator
 import numpy as np
 import time
 from lib.config.config import cfg
+import cv2
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -66,6 +67,7 @@ def make_batch_data_sampler(cfg, sampler, batch_size, drop_last, max_iter,
 
 
 def worker_init_fn(worker_id):
+    cv2.setNumThreads(1)  # MARK: OpenCV undistort is why all cores are taken
     np.random.seed(worker_id + (int(round(time.time() * 1000) % (2**16))))
 
 

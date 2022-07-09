@@ -293,7 +293,7 @@ def batch_rodrigues(poses):
     return rot_mat
 
 
-def get_rigid_transformation(poses, joints, parents):
+def get_rigid_transformation(poses, joints, parents, return_joints=False):
     """
     poses: 24 x 3
     joints: 24 x 3
@@ -318,6 +318,8 @@ def get_rigid_transformation(poses, joints, parents):
         transform_chain.append(curr_res)
     transforms = np.stack(transform_chain, axis=0)
 
+    posed_joints = transforms[:, :3, 3].copy()
+
     # obtain the rigid transformation
     padding = np.zeros([24, 1])
     joints_homogen = np.concatenate([joints, padding], axis=1)
@@ -325,7 +327,10 @@ def get_rigid_transformation(poses, joints, parents):
     transforms[..., 3] = transforms[..., 3] - rel_joints
     transforms = transforms.astype(np.float32)
 
-    return transforms
+    if return_joints:
+        return transforms, posed_joints
+    else:
+        return transforms
 
 
 def padding_bbox(bbox, img):
