@@ -48,5 +48,5 @@ python run.py --type evaluate --cfg_file configs/aligned_nerf_pdf/aligned_aniner
 python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True
 python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p test_novel_pose True resume True 
 
-# Extended version: 3D reconstruction with S9 of Human3.6M as an example (SDF-PDF version)
-python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True vis_posed_mesh True
+# Extended version: 3D reconstruction with S9 of Human3.6M as an example (SDF-PDF version). Only for the SyntheticHuman dataset
+python run.py --type evaluate --cfg_file configs/sdf_pdf/synhuman/anisdf_pdf_rp01_nathan.yaml exp_name anisdf_pdf_nathan resume True vis_posed_mesh True
