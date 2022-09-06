@@ -59,14 +59,6 @@ class Renderer:
         norm_th = 0.1
         inside = tnorm < norm_th
 
-        # # sampling points for blend weight training
-        # if 'tbw' in batch:
-        #     bw = pts_sample_blend_weights(pts, batch['tbw'], batch['tbounds'])
-        #     tnorm = bw[:, 24]
-        #     inside = tnorm < cfg.norm_th
-        # else:
-        #     inside = torch.ones(pts.shape[:2]).bool()
-
         pts = pts[inside]
 
         sdf_decoder = lambda x: self.net.tpose_human.sdf_network(x, batch)
@@ -83,18 +75,10 @@ class Renderer:
         cube = np.pad(cube, 10, mode='constant', constant_values=-10)
         vertices, triangles = mcubes.marching_cubes(cube, 0)
         mesh = trimesh.Trimesh(vertices, triangles)
+        mesh = max(mesh.split(), key=lambda m: len(m.vertices))
+        vertices, triangles = mesh.vertices, mesh.faces
         vertices = (vertices - 10) * cfg.voxel_size[0]
         vertices = vertices + batch['tbounds'][0, 0].detach().cpu().numpy()
-
-        labels = trimesh.graph.connected_component_labels(mesh.face_adjacency)
-        triangles = triangles[labels == 0]
-        import open3d as o3d
-        mesh_o3d = o3d.geometry.TriangleMesh()
-        mesh_o3d.vertices = o3d.utility.Vector3dVector(vertices)
-        mesh_o3d.triangles = o3d.utility.Vector3iVector(triangles)
-        mesh_o3d.remove_unreferenced_vertices()
-        vertices = np.array(mesh_o3d.vertices)
-        triangles = np.array(mesh_o3d.triangles)
 
         # transform vertices to the world space
         pts = torch.from_numpy(vertices).to(pts)[None]
@@ -118,7 +102,7 @@ class Renderer:
         posed_vertices = pose_pts[0].detach().cpu().numpy()
 
         ret = {
-            # 'vertex': vertices,
+            'vertex': vertices,
             'posed_vertex': posed_vertices,
             'triangle': triangles,
             # 'rgb': rgb,

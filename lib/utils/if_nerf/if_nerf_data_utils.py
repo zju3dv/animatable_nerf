@@ -3,6 +3,47 @@ from lib.utils import base_utils
 import cv2
 from lib.config import cfg
 import trimesh
+import os
+
+
+# def get_training_joints(num_train_frame, frame_interval, data_root):
+#     def get_joints(frame_index):
+#         inds = os.listdir(param_root)
+#         inds = sorted([int(ind[:-4]) for ind in inds])
+#         frame_index = inds[frame_index]
+
+#         # transform smpl from the world coordinate to the smpl coordinate
+#         params_path = os.path.join(param_root, '{}.npy'.format(frame_index))
+#         params = np.load(params_path, allow_pickle=True).item()
+#         Rh = params['Rh'].astype(np.float32)
+#         Th = params['Th'].astype(np.float32)
+
+#         # prepare sp input of param pose
+#         R = cv2.Rodrigues(Rh)[0].astype(np.float32)
+
+#         # calculate the skeleton transformation
+#         poses = params['poses'].reshape(-1, 3)
+#         A, canonical_joints = get_rigid_transformation(
+#             poses, joints, parents, return_joints=True)
+
+#         posed_joints = np.dot(canonical_joints, R.T) + Th
+
+#         return posed_joints
+
+#     lbs_root = os.path.join(data_root, 'lbs')
+#     joints = np.load(os.path.join(lbs_root, 'joints.npy'))
+#     joints = joints.astype(np.float32)
+#     parents = np.load(os.path.join(lbs_root, 'parents.npy'))
+#     param_root = os.path.join(data_root, 'new_params')
+
+#     training_joints = []
+#     for i in range(0, num_train_frame * frame_interval, frame_interval):
+#         posed_joints = get_joints(i)
+#         training_joints.append(posed_joints)
+#     training_joints = np.stack(training_joints)
+
+#     np.save(os.path.join(lbs_root, 'training_joints.npy'), training_joints)
+#     return training_joints
 
 
 def get_rays_within_bounds_test(H, W, K, R, T, bounds):

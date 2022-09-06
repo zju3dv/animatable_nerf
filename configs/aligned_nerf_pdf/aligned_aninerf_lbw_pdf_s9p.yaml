@@ -106,10 +106,10 @@ aninerf_animation_cfg:
     trainer_path: 'lib/train/trainers/aninerf_animation_trainer.py'
 
 pose_sequence_cfg:
-    train_dataset_module: 'lib.datasets.tpose_pose_sequence_dataset'
-    train_dataset_path: 'lib/datasets/tpose_pose_sequence_dataset.py'
-    test_dataset_module: 'lib.datasets.tpose_pose_sequence_dataset'
-    test_dataset_path: 'lib/datasets/tpose_pose_sequence_dataset.py'
+    train_dataset_module: 'lib.datasets.tpose_pdf_pose_sequence_dataset'
+    train_dataset_path: 'lib/datasets/tpose_pdf_pose_sequence_dataset.py'
+    test_dataset_module: 'lib.datasets.tpose_pdf_pose_sequence_dataset'
+    test_dataset_path: 'lib/datasets/tpose_pdf_pose_sequence_dataset.py'
 
     renderer_module: 'lib.networks.renderer.tpose_renderer_mmsk'
     renderer_path: 'lib/networks/renderer/tpose_renderer_mmsk.py'
@@ -123,10 +123,10 @@ pose_sequence_cfg:
     training_view: [0]
 
 novel_view_cfg:
-    train_dataset_module: 'lib.datasets.tpose_novel_view_dataset'
-    train_dataset_path: 'lib/datasets/tpose_novel_view_dataset.py'
-    test_dataset_module: 'lib.datasets.tpose_novel_view_dataset'
-    test_dataset_path: 'lib/datasets/tpose_novel_view_dataset.py'
+    train_dataset_module: 'lib.datasets.tpose_pdf_novel_view_dataset'
+    train_dataset_path: 'lib/datasets/tpose_pdf_novel_view_dataset.py'
+    test_dataset_module: 'lib.datasets.tpose_pdf_novel_view_dataset'
+    test_dataset_path: 'lib/datasets/tpose_pdf_novel_view_dataset.py'
 
     renderer_module: 'lib.networks.renderer.tpose_renderer_mmsk'
     renderer_path: 'lib/networks/renderer/tpose_renderer_mmsk.py'
@@ -139,10 +139,10 @@ novel_view_cfg:
 
 
 mesh_cfg:
-    train_dataset_module: 'lib.datasets.aninerf_mesh_dataset'
-    train_dataset_path: 'lib/datasets/aninerf_mesh_dataset.py'
-    test_dataset_module: 'lib.datasets.aninerf_mesh_dataset'
-    test_dataset_path: 'lib/datasets/aninerf_mesh_dataset.py'
+    train_dataset_module: 'lib.datasets.aninerf_pdf_mesh_dataset'
+    train_dataset_path: 'lib/datasets/aninerf_pdf_mesh_dataset.py'
+    test_dataset_module: 'lib.datasets.aninerf_pdf_mesh_dataset'
+    test_dataset_path: 'lib/datasets/aninerf_pdf_mesh_dataset.py'
 
     renderer_module: 'lib.networks.renderer.aninerf_mesh_renderer'
     renderer_path: 'lib/networks/renderer/aninerf_mesh_renderer.py'

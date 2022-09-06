@@ -7,6 +7,130 @@ from imgaug import augmenters as iaa
 from lib.config import cfg
 from plyfile import PlyData
 
+def get_mesh(verts: torch.Tensor, faces: torch.Tensor, uv: torch.Tensor = None, img: torch.Tensor = None, colors: torch.Tensor = None, filename: str = "default.ply"):
+    import os
+    from PIL import Image
+    from trimesh import Trimesh
+    from trimesh.visual import TextureVisuals
+    from trimesh.visual.material import PBRMaterial, SimpleMaterial
+    from lib.utils.base_utils import DotDict
+    def to_numpy(batch) -> torch.Tensor:
+        if isinstance(batch, (tuple, list)):
+            batch = [to_numpy(b) for b in batch]
+        elif isinstance(batch, dict):
+            batch = DotDict({k: (to_numpy(v) if k != "meta" else v) for k, v in batch.items()})
+        elif isinstance(batch, torch.Tensor):
+            batch = batch.detach().cpu().numpy()
+        else:  # numpy and others
+            batch = np.array(batch)
+        return batch
+    verts, faces = to_numpy([verts, faces])
+    verts = verts.reshape(-1, 3)
+    faces = faces.reshape(-1, 3)
+    # MARK: used process=False here to preserve vertex order
+    mesh = Trimesh(verts, faces, process=False)
+    if colors is not None:
+        colors = to_numpy(colors)
+        colors = colors.reshape(-1, 3)
+        mesh.visual.vertex_colors = (np.concatenate([colors, np.ones([*colors.shape[:-1], 1])], axis=-1)*255).astype(np.uint8)
+
+    if uv is not None:
+        uv = to_numpy(uv)
+        uv = uv.reshape(-1, 2)
+        img = to_numpy(img)
+        img = img.reshape(*img.shape[-3:])
+        img = Image.fromarray(np.uint8(img*255))
+        mat = SimpleMaterial(
+            image=img,
+            diffuse=(0.8, 0.8, 0.8),
+            ambient=(1.0, 1.0, 1.0),
+        )
+        mat.name = os.path.splitext(os.path.split(filename)[1])[0]
+        texture = TextureVisuals(uv=uv, material=mat)
+        mesh.visual = texture
+
+    return mesh
+
+def get_tensor_mesh_data(verts: torch.Tensor, faces: torch.Tensor,  uv: torch.Tensor = None, img: torch.Tensor = None, uvfaces: torch.Tensor = None):
+    from lib.utils.base_utils import DotDict
+    def to_tensor(batch) -> np.ndarray:
+        if isinstance(batch, (tuple, list)):
+            batch = [to_tensor(b) for b in batch]
+        elif isinstance(batch, dict):
+            batch = DotDict({k: (to_tensor(v) if k != "meta" else v) for k, v in batch.items()})
+        elif isinstance(batch, torch.Tensor):
+            pass
+        else:  # numpy and others
+            batch = torch.tensor(batch)
+        return batch
+
+    # pytorch3d wants a tensor
+    verts, faces, uv, img, uvfaces = to_tensor([verts, faces, uv, img, uvfaces])
+    verts = verts.view(-1, 3)
+    faces = faces.view(-1, 3)
+    uv = uv.view(-1, 2)
+    img = img.view(img.shape[-3:])
+    uvfaces = uvfaces.view(-1, 3)
+
+    # textures = TexturesUV(img, uvfaces, uv)
+    # meshes = Meshes(verts, faces, textures)
+    return verts, faces, uv, img, uvfaces
+
+def export_mesh(verts: torch.Tensor, faces: torch.Tensor,  uv: torch.Tensor = None, img: torch.Tensor = None, uvfaces: torch.Tensor = None, colors: torch.Tensor = None, filename: str = "default.ply"):
+    if uvfaces is None:
+        mesh = get_mesh(verts, faces, uv, img, colors, filename)
+        return mesh.export(filename)
+    else:
+        from pytorch3d.io import save_obj
+        verts, faces, uv, img, uvfaces = get_tensor_mesh_data(verts, faces, uv, img, uvfaces)
+        save_obj(filename, verts, faces, verts_uvs=uv, faces_uvs=uvfaces, texture_map=img)
+
+def export_pynt_pts(pts: torch.Tensor, rgb: torch.Tensor = None, normals: torch.Tensor = None, filename: str = "default.ply"):
+    from pandas import DataFrame
+    from pyntcloud import PyntCloud
+    from lib.utils.base_utils import DotDict
+    def to_numpy(batch) -> torch.Tensor:
+        if isinstance(batch, (tuple, list)):
+            batch = [to_numpy(b) for b in batch]
+        elif isinstance(batch, dict):
+            batch = DotDict({k: (to_numpy(v) if k != "meta" else v) for k, v in batch.items()})
+        elif isinstance(batch, torch.Tensor):
+            batch = batch.detach().cpu().numpy()
+        else:  # numpy and others
+            batch = np.array(batch)
+        return batch
+
+    data = DotDict()
+
+    pts = to_numpy(pts)
+    pts = pts.reshape(-1, 3)
+    data.x = pts[:, 0].astype(np.float32)
+    data.y = pts[:, 1].astype(np.float32)
+    data.z = pts[:, 2].astype(np.float32)
+
+    if rgb is not None:
+        rgb = to_numpy(rgb)
+        rgb = rgb.reshape(-1, 3)
+        data.red = rgb[:, 0].astype(np.uint8)
+        data.green = rgb[:, 1].astype(np.uint8)
+        data.blue = rgb[:, 2].astype(np.uint8)
+    else:
+        data.red = (pts[:, 0] * 255).astype(np.uint8)
+        data.green = (pts[:, 1] * 255).astype(np.uint8)
+        data.blue = (pts[:, 2] * 255).astype(np.uint8)
+
+    if normals is not None:
+        normals = to_numpy(normals)
+        normals = normals / (np.linalg.norm(normals, axis=-1, keepdims=True) + 1e-13)
+        normals = normals.reshape(-1, 3)
+        data.nx = normals[:, 0].astype(np.float32)
+        data.ny = normals[:, 1].astype(np.float32)
+        data.nz = normals[:, 2].astype(np.float32)
+
+    df = DataFrame(data)
+
+    cloud = PyntCloud(df)  # construct the data
+    return cloud.to_file(filename)
 
 def gaussian_radius(det_size, min_overlap=0.7):
     height, width = det_size

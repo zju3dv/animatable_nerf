@@ -11,3 +11,7 @@ __pycache__/
 *.ipynb
 /data/
 build
+*.jpg
+*.png
+*.ply
+*.zip

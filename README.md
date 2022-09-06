@@ -167,32 +167,35 @@ Take the training on `313` as an example. The command lines for training are rec
 
 Addtional training and test commandlines are recorded in [train.sh](train.sh) and [test.sh](test.sh).
 
-To train & visualize & test the extended version of Animatable NeRF: Animatable Neural Fields, simply change the configuration files of the commandlines mentioned above.
+Moreover, we compiled a list of all possible commands to run in [extension.sh](extension.sh) using on the S9 sequence of the Human3.6M dataset.
 
-Take the S9 sequence of Human3.6M as an example (SDF-PDF):
+This include training, evaluating and visualizing the original Animatable NeRF implementation and all three extented versions.
+
+Here we list the portion of the commands for the SDF-PDF configuration:
 
 ```shell
-# Test on training human poses
+# extension: anisdf_pdf
+
+# evaluating on training poses for anisdf_pdf
 python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True
 
-# Test on unseen human poses
+# evaluating on novel poses for anisdf_pdf
 python run.py --type evaluate --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True test_novel_pose True
 
-# Visualize novel views of the 0-th frame
+# visualizing novel view of 0th frame for anisdf_pdf
 python run.py --type visualize --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True vis_novel_view True begin_ith_frame 0
 
-# Visualize views of dynamic humans with 3-th camera
+# visualizing animation of 3rd camera for anisdf_pdf
 python run.py --type visualize --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume True vis_pose_sequence True test_view "3,"
 
-# Visualize mesh
+# generating posed mesh for anisdf_pdf
 python run.py --type visualize --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p vis_posed_mesh True
 
-# Training
+# training base model for anisdf_pdf
 python train_net.py --cfg_file configs/sdf_pdf/anisdf_pdf_s9p.yaml exp_name anisdf_pdf_s9p resume False
-
-# Tensorboard
-tensorboard --logdir data/record/deform
 ```
+
+To run Animatable NeRF on other officially supported datasets, simply change the `--cfg_file` and `exp_name` parameters.
 
 Note that for Animatable NeRF with pose-dependent displacement field (NeRF-PDF) and Animatable Neural Surface with pose-dependent displacement field (SDF-PDF), there's no need for training the blend weight fields of unseen human poses.
 

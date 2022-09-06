@@ -95,11 +95,18 @@ class Dataset(data.Dataset):
 
         msk_path = os.path.join(self.data_root, 'mask_cihp', im)[:-4] + '.png'
         if not os.path.exists(msk_path):
-            msk_path = os.path.join(self.data_root, im.replace(
-                'images', 'mask'))[:-4] + '.png'
+            msk_path = os.path.join(self.data_root, 'mask',im)[:-4] + '.png'
+        if not os.path.exists(msk_path):
+            msk_path = os.path.join(self.data_root,im.replace('images', 'mask'))[:-4] + '.png'
+        if not os.path.exists(msk_path):
+            msk_path = os.path.join(self.data_root,im.replace('images', 'mask'))[:-4] + '.jpg'
         msk_cihp = imageio.imread(msk_path)
         if len(msk_cihp.shape) == 3:
             msk_cihp = msk_cihp[..., 0]
+        if 'deepcap' in self.data_root or 'nerfcap' in self.data_root:
+            msk_cihp = (msk_cihp > 125).astype(np.uint8)
+        else:
+            msk_cihp = (msk_cihp != 0).astype(np.uint8)
         msk = (msk_cihp != 0).astype(np.uint8)
 
         msk = cv2.undistort(msk, self.Ks[nv], self.Ds[nv])
@@ -141,6 +148,9 @@ class Dataset(data.Dataset):
         if self.human in ['CoreView_313', 'CoreView_315']:
             i = int(os.path.basename(img_path).split('_')[4])
             frame_index = i - 1
+        elif 'deepcap' in self.data_root or 'nerfcap' in self.data_root:
+            i = int(os.path.basename(img_path).split('_')[-1][:-4])
+            frame_index = i
         else:
             i = int(os.path.basename(img_path)[:-4])
             frame_index = i

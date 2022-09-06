@@ -1,4 +1,4 @@
-import open3d as o3d
+# import open3d as o3d
 from . import yacs
 from .yacs import CfgNode as CN
 import argparse
@@ -84,7 +84,7 @@ cfg.train.acti_func = 'relu'
 
 cfg.train.use_vgg = False
 cfg.train.vgg_pretrained = ''
-cfg.train.vgg_layer_name = [0,0,0,0,0]
+cfg.train.vgg_layer_name = [0, 0, 0, 0, 0]
 
 cfg.train.use_ssim = False
 cfg.train.use_d = False
@@ -98,6 +98,8 @@ cfg.test.sampler = 'default'
 cfg.test.batch_sampler = 'default'
 cfg.test.sampler_meta = CN({'min_hw': [480, 640], 'max_hw': [480, 640], 'strategy': 'origin'})
 cfg.test.frame_sampler_interval = 30
+cfg.test.begin_sampler_ind = 0
+cfg.test.num_sampler_ind = -1
 
 # trained model
 cfg.trained_model_dir = 'data/trained_model'

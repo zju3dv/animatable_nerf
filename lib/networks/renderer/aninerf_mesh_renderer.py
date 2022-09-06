@@ -55,6 +55,7 @@ class Renderer:
         # triangles = np.array(mesh_o3d.triangles)
 
         ret = {
+            'vertex': vertices,
             'posed_vertex': vertices,
             'triangle': triangles,
             # 'rgb': rgb,

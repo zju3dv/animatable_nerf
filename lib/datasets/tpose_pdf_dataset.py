@@ -61,8 +61,9 @@ class Dataset(data.Dataset):
         self.big_A = self.load_bigpose()
 
         if cfg.test_novel_pose or cfg.aninerf_animation:
-            self.training_joints = np.load(
-                os.path.join(self.lbs_root, 'training_joints.npy'))
+            training_joints_path = os.path.join(self.lbs_root, 'training_joints.npy')
+            if os.path.exists(training_joints_path):
+                self.training_joints = np.load(training_joints_path)
 
         self.nrays = cfg.N_rand
 
@@ -92,7 +93,7 @@ class Dataset(data.Dataset):
         msk_cihp = imageio.imread(msk_path)
         if len(msk_cihp.shape) == 3:
             msk_cihp = msk_cihp[..., 0]
-        if 'deepcap' in self.data_root:
+        if 'deepcap' in self.data_root or 'nerfcap' in self.data_root:
             msk_cihp = (msk_cihp > 125).astype(np.uint8)
         else:
             msk_cihp = (msk_cihp != 0).astype(np.uint8)
@@ -141,7 +142,7 @@ class Dataset(data.Dataset):
         posed_joints = np.dot(canonical_joints, R.T) + Th
 
         # find the nearest training frame
-        if cfg.test_novel_pose or cfg.aninerf_animation:
+        if (cfg.test_novel_pose or cfg.aninerf_animation) and hasattr(self, "training_joints"):
             nearest_frame_index = np.linalg.norm(self.training_joints -
                                                  posed_joints[None],
                                                  axis=2).mean(axis=1).argmin()
@@ -185,7 +186,7 @@ class Dataset(data.Dataset):
         if self.human in ['CoreView_313', 'CoreView_315']:
             i = int(os.path.basename(img_path).split('_')[4])
             frame_index = i - 1
-        elif 'deepcap' in self.data_root:
+        elif 'deepcap' in self.data_root or 'nerfcap' in self.data_root:
             i = int(os.path.basename(img_path).split('_')[-1][:-4])
             frame_index = i
         else:

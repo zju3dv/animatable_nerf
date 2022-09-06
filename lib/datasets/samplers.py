@@ -137,8 +137,12 @@ class FrameSampler(Sampler):
 
     def __init__(self, dataset):
         inds = np.arange(0, len(dataset.ims))
-        ni = len(dataset.ims) // dataset.num_cams
-        inds = inds.reshape(ni, -1)[::cfg.test.frame_sampler_interval]
+        n_frames = len(dataset.ims) // dataset.num_cams
+
+        i = cfg.test.begin_sampler_ind
+        ni = cfg.test.num_sampler_ind if cfg.test.num_sampler_ind != -1 else cfg.num_train_frame
+        i_intv = cfg.test.frame_sampler_interval
+        inds = inds.reshape(n_frames, -1)[i:i + ni][::i_intv]  # NOTE: here ni has different meaning
         self.inds = inds.ravel()
 
     def __iter__(self):

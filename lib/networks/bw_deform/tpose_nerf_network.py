@@ -5,7 +5,7 @@ from lib.config import cfg
 from lib.utils.blend_utils import *
 from .. import embedder
 from lib.utils import net_utils
-
+from lib.utils import sample_utils
 
 class Network(nn.Module):
     def __init__(self):
@@ -78,6 +78,9 @@ class Network(nn.Module):
 
         return tpose, pbw
 
+    # NOTE: this part should actually have been deprecated...
+    # we leave this here for reproducability, in the extended version, we implmented a better aninerf pipeline (same core idea as the paper)
+    # thus some of the old config files or code could not run as expected especially when outside the core training loop
     def calculate_alpha(self, wpts, batch):
         # transform points from the world space to the pose space
         wpts = wpts[None]
@@ -109,6 +112,8 @@ class Network(nn.Module):
         full_alpha[pind[0]] = alpha
 
         return full_alpha
+    
+    get_alpha = calculate_alpha
 
     def forward(self, wpts, viewdir, dists, batch):
         # transform points from the world space to the pose space
