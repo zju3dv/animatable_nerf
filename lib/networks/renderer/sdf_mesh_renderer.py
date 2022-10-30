@@ -48,6 +48,15 @@ class Renderer:
         all_sdf = np.concatenate(all_sdf, axis=1)
         return all_normal, all_sdf
 
+    def batchify_residual_deformation(self, wpts, batch, chunk=1024 * 32):
+        all_ret = []
+        for i in range(0, wpts.shape[1], chunk):
+            ret = self.net.calculate_residual_deformation(wpts[:, i:i + chunk],
+                                                          batch)
+            all_ret.append(ret)
+        all_ret = torch.cat(all_ret, 1)
+        return all_ret
+
     def render(self, batch):
         pts = batch['pts']
         sh = pts.shape
@@ -61,8 +70,10 @@ class Renderer:
 
         pts = pts[inside]
 
-        sdf_decoder = lambda x: self.net.tpose_human.sdf_network(x, batch)
-        # sdf_decoder = lambda x: self.net.get_sdf(x, batch)
+        resd = self.batchify_residual_deformation(pts[None], batch)[0]
+        pts = pts + resd
+
+        def sdf_decoder(x): return self.net.tpose_human.sdf_network(x, batch)
 
         sdf = self.batchify_rays(pts, sdf_decoder, self.net, 2048 * 64, batch)
 
@@ -85,27 +96,17 @@ class Renderer:
         tbw, _ = sample_utils.sample_blend_closest_points(pts, batch['tvertices'], batch['weights'])
         tbw = tbw.permute(0, 2, 1)
 
-        if 'gradient_of_deformed_sdf' in dir(self.net):
-            normal, sdf = self.batchify_normal_sdf(pts, batch)
-            resd = -normal * sdf
-            resd = torch.from_numpy(resd).to(pts)
-            deformed_pts = pts + resd
-        else:
-            deformed_pts = pts
-
-        tpose_pts = pose_points_to_tpose_points(deformed_pts, tbw,
+        tpose_pts = pose_points_to_tpose_points(pts, tbw,
                                                 batch['big_A'])
         pose_pts = tpose_points_to_pose_points(tpose_pts, tbw, batch['A'])
         pose_pts = pose_points_to_world_points(pose_pts, batch['R'],
                                                batch['Th'])
-        # posed_vertices = deformed_pts[0].detach().cpu().numpy()
         posed_vertices = pose_pts[0].detach().cpu().numpy()
 
         ret = {
             'vertex': vertices,
             'posed_vertex': posed_vertices,
             'triangle': triangles,
-            # 'rgb': rgb,
         }
 
         return ret
