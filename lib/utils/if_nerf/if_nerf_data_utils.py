@@ -528,3 +528,34 @@ def adjust_hsv(img, saturation, brightness, contrast):
     img = np.minimum(img, 255)
     img = img.astype(np.uint8)
     return img
+
+
+def transform_can_smpl(xyz):
+    center = np.array([0, 0, 0]).astype(np.float32)
+    rot = np.array([[np.cos(0), -np.sin(0)], [np.sin(0), np.cos(0)]])
+    rot = rot.astype(np.float32)
+    trans = np.array([0, 0, 0]).astype(np.float32)
+    if np.random.uniform() > cfg.rot_ratio:
+        return xyz, center, rot, trans
+
+    xyz = xyz.copy()
+
+    # rotate the smpl
+    rot_range = np.pi / 32
+    t = np.random.uniform(-rot_range, rot_range)
+    rot = np.array([[np.cos(t), -np.sin(t)], [np.sin(t), np.cos(t)]])
+    rot = rot.astype(np.float32)
+    center = np.mean(xyz, axis=0)
+    xyz = xyz - center
+    xyz[:, [0, 2]] = np.dot(xyz[:, [0, 2]], rot.T)
+    xyz = xyz + center
+
+    # translate the smpl
+    x_range = 0.05
+    z_range = 0.025
+    x_trans = np.random.uniform(-x_range, x_range)
+    z_trans = np.random.uniform(-z_range, z_range)
+    trans = np.array([x_trans, 0, z_trans]).astype(np.float32)
+    xyz = xyz + trans
+
+    return xyz, center, rot, trans
