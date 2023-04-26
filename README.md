@@ -1,7 +1,7 @@
 **News**
 
 * `07/09/2022` We release the extended version of Animatable NeRF (now dubbed [Animatable Neural Fields](https://arxiv.org/abs/2203.08133)). We evaluated three different versions of Animatable Neural Fields, including vanilla Animatable NeRF, a version where the neural blend weight field is replaced with displacement field and a version where the canonical NeRF model is replaced with a neural surface field (output is SDF instead of volume density, also using displacement field). We also provide evaluation framework for reconstruction quality comparison.
-* `10/28/2021` To make the comparison with Animatable NeRF easier on the Human3.6M dataset, we save the quantitative results at [here](https://zjueducn-my.sharepoint.com/:u:/g/personal/pengsida_zju_edu_cn/EbpGvw8LvnFHislCMRzlpLkBNcIdJeWuc96TOJhQ1gX7cQ?e=nirNmn), which also contains the results of other methods, including Neural Body, D-NeRF, Multi-view Neural Human Rendering, and Deferred Neural Human Rendering.
+* `10/28/2021` To make the comparison with Animatable NeRF easier on the Human3.6M dataset, we save the quantitative results at [here](https://zjueducn-my.sharepoint.com/:f:/g/personal/pengsida_zju_edu_cn/EpW0AHZh1OtDoa-vTaaCAYgBddyACEICg-941VYgyASk7g?e=W4KvSK), which also contains the results of other methods, including Neural Body, D-NeRF, Multi-view Neural Human Rendering, and Deferred Neural Human Rendering.
 
 # Animatable Neural Radiance Fields for Modeling Dynamic Human Bodies
 
