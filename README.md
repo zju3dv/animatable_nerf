@@ -94,7 +94,7 @@ Take the training on `S9` as an example. The command lines for training are reco
 
 ## Run the code on ZJU-MoCap
 
-If someone wants to download the ZJU-Mocap dataset, please fill in the [agreement](https://zjueducn-my.sharepoint.com/:b:/g/personal/pengsida_zju_edu_cn/EUPiybrcFeNEhdQROx4-LNEBm4lzLxDwkk1SBcNWFgeplA?e=BGDiQh), and email me (pengsida@zju.edu.cn) and cc Xiaowei Zhou (xwzhou@zju.edu.cn) to request the download link.
+If someone wants to download the ZJU-Mocap dataset, please fill in the [agreement](https://pengsida.net/project_page_assets/files/ZJU-MoCap_Agreement.pdf), and email me (pengsida@zju.edu.cn) and cc Xiaowei Zhou (xwzhou@zju.edu.cn) to request the download link.
 
 We provide the pretrained models at [here](https://drive.google.com/drive/folders/1XH5zUMkguUW64GKulWTo8oOWZra6Dnzy?usp=sharing).
 
