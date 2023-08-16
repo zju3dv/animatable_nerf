@@ -24,7 +24,7 @@ Please see [INSTALL.md](INSTALL.md) for manual installation.
 
 Since the license of Human3.6M dataset does not allow us to distribute its data, we cannot release the processed Human3.6M dataset publicly. If someone is interested at the processed data, please email me.
 
-We provide the pretrained models at [here](https://zjueducn-my.sharepoint.com/:f:/g/personal/pengsida_zju_edu_cn/Et7h-48T0_xGtjNGXHwD1-gBPUNJZqd9VPTnsQlkSLktOw?e=TyCnuY).
+We provide the pretrained models at [here](https://drive.google.com/drive/folders/1XH5zUMkguUW64GKulWTo8oOWZra6Dnzy?usp=sharing).
 
 ### Test on Human3.6M
 
@@ -96,7 +96,7 @@ Take the training on `S9` as an example. The command lines for training are reco
 
 If someone wants to download the ZJU-Mocap dataset, please fill in the [agreement](https://zjueducn-my.sharepoint.com/:b:/g/personal/pengsida_zju_edu_cn/EUPiybrcFeNEhdQROx4-LNEBm4lzLxDwkk1SBcNWFgeplA?e=BGDiQh), and email me (pengsida@zju.edu.cn) and cc Xiaowei Zhou (xwzhou@zju.edu.cn) to request the download link.
 
-We provide the pretrained models at [here](https://zjueducn-my.sharepoint.com/:f:/g/personal/pengsida_zju_edu_cn/Et7h-48T0_xGtjNGXHwD1-gBPUNJZqd9VPTnsQlkSLktOw?e=TyCnuY).
+We provide the pretrained models at [here](https://drive.google.com/drive/folders/1XH5zUMkguUW64GKulWTo8oOWZra6Dnzy?usp=sharing).
 
 ### Test on ZJU-MoCap
 
