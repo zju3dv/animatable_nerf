@@ -54,7 +54,7 @@ python setup.py install
 
 #### ZJU-Mocap dataset
 
-1. If someone wants to download the ZJU-Mocap dataset, please fill in the [agreement](https://pengsida.net/project_page_assets/files/ZJU-MoCap_Agreement.pdf), and email me (pengsida@zju.edu.cn) and cc Xiaowei Zhou (xwzhou@zju.edu.cn) to request the download link.
+1. If someone wants to download the ZJU-Mocap dataset, please fill the [form](https://docs.google.com/forms/d/1QcTp5qIbIBn8PCT-EQgG-fOB4HZ9khpRkT3q2OnH2bs) to obtain the download link. Another way is filling in the [agreement](https://pengsida.net/project_page_assets/files/ZJU-MoCap_Agreement.pdf) and emailing me (pengsida@zju.edu.cn) and cc Xiaowei Zhou (xwzhou@zju.edu.cn) to request the download link.
 2. Create a soft link:
 
     ```
