@@ -1,5 +1,6 @@
 **News**
 
+* `01/21/2024` We release the [Mobile-Stage dataset](https://docs.google.com/forms/d/e/1FAIpQLSeEbjuTV7w0lfryl-9FPX1VteuPGkbqjDvxXebY02Tm6BMejQ/viewform?usp=sf_link) and [SyntheticHuman++ dataset](https://docs.google.com/forms/d/e/1FAIpQLSctrS3NZ5pThqQzakvitykNgJxpGifT9AOKEtWYZ_JqFQIb3w/viewform?usp=sf_link).
 * `01/12/2024` [Animatable Neural Fields](https://arxiv.org/abs/2203.08133) gets accepted to TPAMI.
 * `07/09/2022` This repository includes the implementation of Animatable SDF (now dubbed [Animatable Neural Fields](https://arxiv.org/abs/2203.08133)).
 * `07/09/2022` We release the [extended version](https://arxiv.org/abs/2203.08133) of Animatable NeRF. We evaluated three different versions of Animatable Neural Fields, including vanilla Animatable NeRF, a version where the neural blend weight field is replaced with displacement field and a version where the canonical NeRF model is replaced with a neural surface field (output is SDF instead of volume density, also using displacement field). We also provide evaluation framework for reconstruction quality comparison.
